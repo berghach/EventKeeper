@@ -1,6 +1,9 @@
 package entities;
 
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+
 import enums.EventType;
 
 public class Event {
@@ -13,7 +16,7 @@ public class Event {
     private Date date;
     private String location;
     private EventType type;
-
+    private List<Registration> registrations;
     // Constructor
     public Event(String title, Date date, String location, EventType type) {
         this.id = counter++;  // Assign current value of counter to id, then increment counter
@@ -21,6 +24,7 @@ public class Event {
         this.date = date;
         this.location = location;
         this.type = type;
+        this.registrations = new ArrayList<>();
     }
 
     // Getters and Setters
@@ -61,16 +65,34 @@ public class Event {
     public void setType(EventType type) {
         this.type = type;
     }
+    // Method to add a registration to the event
+    public void addRegistration(Registration registration) {
+        this.registrations.add(registration);
+    }
+
+    // Method to get the event registrations
+    public List<Registration> getRegistrations() {
+        return registrations;
+    }
+
+    // Method to get the event participants
+    public List<User> getParticipants() {
+        List<User> participants = new ArrayList<>();
+        for (Registration registration : registrations) {
+            participants.add(registration.getParticipant());
+        }
+        return participants;
+    }
 
     // toString method
     @Override
     public String toString() {
         return "Event{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", date=" + date +
-                ", location='" + location + '\'' +
-                ", type=" + type +
+                "\tid=" + id +",\n"+
+                "\ttitle= '" + title + '\'' +",\n"+
+                "\tdate= " + date +",\n"+
+                "\tlocation= '" + location + '\'' +",\n"+
+                "\ttype= " + type +",\n"+
                 '}';
     }
 }

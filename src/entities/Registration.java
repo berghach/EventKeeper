@@ -54,11 +54,11 @@ public class Registration {
     // toString method
     @Override
     public String toString() {
-        return "Registration{" +
-                "id=" + id +
-                ", date=" + date +
-                ", event=" + event +
-                ", participant=" + participant +
+        return "Registration{\n" +
+                "\tid=" + id +",\n"+
+                "\tdate=" + date +",\n"+
+                "\tevent=" + event.toString() +",\n"+
+                "\tparticipant=" + participant.toString() +",\n"+
                 '}';
     }
 }

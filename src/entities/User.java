@@ -1,6 +1,9 @@
 package entities;
 
 import enums.Role;
+import java.util.List;
+import java.util.ArrayList;
+
 
 public class User {
     // Static counter to track the next ID
@@ -12,6 +15,7 @@ public class User {
     private String lastName;
     private Role role;
     private String password;
+    private List<Registration> registrations;
 
     // Constructor
     public User(String firstName, String lastName, Role role, String password) {
@@ -20,6 +24,7 @@ public class User {
         this.lastName = lastName;
         this.role = role;
         this.password = password;
+        this.registrations = new ArrayList<>();
     }
 
     // Getters and Setters
@@ -60,15 +65,33 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+ // Method to add a registration for the user
+ public void addRegistration(Registration registration) {
+    this.registrations.add(registration);
+}
+
+// Method to get user registrations
+public List<Registration> getRegistrations() {
+    return registrations;
+}
+
+// Method to get events which the user is registered to
+public List<Event> getEvents() {
+    List<Event> events = new ArrayList<>();
+    for (Registration registration : registrations) {
+        events.add(registration.getEvent());
+    }
+    return events;
+}
 
     // toString method
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", role=" + role +
+        return "User{\n" +
+                "\tid=" + id +",\n"+
+                "\tfirstName= '" + firstName + '\'' +",\n"+
+                "\tlastName= '" + lastName + '\'' +",\n"+
+                "\trole= " + role +",\n"+
                 '}';
     }
 }

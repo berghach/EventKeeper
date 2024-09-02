@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 import entities.*;
 import enums.*;
@@ -12,8 +14,9 @@ public class App {
         do{
             System.out.println("=============Wellcome, to Event Keeper!=============");
             System.out.println("You are a:");
-            System.out.println("1. Guest");
+            System.out.println("1. Guest (First time in this app)");
             System.out.println("2. User");
+            System.out.println("3. Admin");
             System.out.println("====================================================");
             System.out.print("Entrez votre choix : ");
             choice = scanner.nextInt();
@@ -25,11 +28,14 @@ public class App {
                 case 2:
                     System.out.println("You already have an account.");
                     break;
+                case 3:
+                    // admin verification
+                    break;
                 default:
-                System.out.println("Invalid choice! try 1 or 2.");
+                System.out.println("Invalid choice! try one of the choices above.");
                     break;
             }
-        }while(choice != 1 && choice != 2);
+        }while(choice < 1 || choice > 3);
         scanner.close();
     }
 
@@ -40,10 +46,14 @@ public class App {
      * @throws Exception if an error occurs
      */
     public static void main(String[] args) throws Exception {
-        String myvar = Role.ADMIN;
         User adminUser = new User("Admin", "User", Role.ADMIN, "adminpass");
         User user1 = new User("John", "Doe", Role.ADMIN, "password123");
         User user2 = new User("Jane", "Smith", Role.USER, "password456");
-        index();
+        List<User> users = new ArrayList<>();
+        users.add(user1);
+        users.add(user2);
+        // index();
+        System.out.println(adminUser);
+        users.forEach(System.out::println);
     }
 }
