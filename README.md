@@ -16,3 +16,14 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 ## Dependency Management
 
 The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+
+
+
+// User adminUser = new User("Admin", "User", Role.ADMIN, "adminpass");
+        // User user1 = new User("John", "Doe", Role.ADMIN, "password123");
+        // User user2 = new User("Jane", "Smith", Role.USER, "password456");
+        // List<User> users = new ArrayList<>();
+        // users.add(user1);
+        // users.add(user2);
+        // System.out.println(adminUser);
+        // users.forEach(System.out::println);

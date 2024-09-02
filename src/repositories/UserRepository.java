@@ -40,4 +40,13 @@ public class UserRepository implements Repository<User> {
     public boolean delete(int id) {
         return users.removeIf(user -> user.getId() == id);
     }
+    // Method to get a user by email
+    public User findByEmail(String email) {
+        for (User user : users) {
+            if (user.getEmail().equalsIgnoreCase(email)) {
+                return user; 
+            }
+        }
+        return null; 
+    }
 }

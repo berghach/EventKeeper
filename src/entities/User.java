@@ -14,15 +14,17 @@ public class User {
     private String firstName;
     private String lastName;
     private Role role;
+    private String email;
     private String password;
     private List<Registration> registrations;
 
     // Constructor
-    public User(String firstName, String lastName, Role role, String password) {
+    public User(String firstName, String lastName, Role role, String email, String password) {
         this.id = counter++;  // Assign current value of counter to id, then increment counter
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
+        this.email = email;
         this.password = password;
         this.registrations = new ArrayList<>();
     }
@@ -56,6 +58,13 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -92,6 +101,7 @@ public List<Event> getEvents() {
                 "\tfirstName= '" + firstName + '\'' +",\n"+
                 "\tlastName= '" + lastName + '\'' +",\n"+
                 "\trole= " + role +",\n"+
+                "\temail= " + email +",\n"+
                 '}';
     }
 }
