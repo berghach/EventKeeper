@@ -87,12 +87,13 @@ public class Event {
     // toString method
     @Override
     public String toString() {
-        return "Event{" +
-                "\tid=" + id +",\n"+
-                "\ttitle= '" + title + '\'' +",\n"+
-                "\tdate= " + date +",\n"+
-                "\tlocation= '" + location + '\'' +",\n"+
-                "\ttype= " + type +",\n"+
-                '}';
+        return "{" +
+                "\tID=" + id +",\n"+
+                "\tTitle= '" + title + "\'" +",\n"+
+                "\tDate= " + date +",\n"+
+                "\tLocation= '" + location + "\'" +",\n"+
+                "\tType= " + type +",\n"+
+                "\tNumber of Participants: " + this.getParticipants().size() +",\n"+
+                "}";
     }
 }
