@@ -93,7 +93,6 @@ public class Event {
                 "\tDate= " + date +",\n"+
                 "\tLocation= '" + location + "\'" +",\n"+
                 "\tType= " + type +",\n"+
-                "\tNumber of Participants: " + this.getParticipants().size() +",\n"+
                 "}";
     }
 }

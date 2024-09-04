@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+// import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
@@ -15,7 +15,7 @@ public class ConsoleInterface {
     private UserRepository userRepo = new UserRepository();
     private RegistrationRepository registrationRepo = new RegistrationRepository();
     private static Scanner scanner = new Scanner(System.in);
-    private static User authUser;
+    private static User authUser; // store the authenticated user
 
     public ConsoleInterface() {
         // Intializing the project
@@ -60,6 +60,8 @@ public class ConsoleInterface {
         event1.addRegistration(reg3);
     }
     public void index(){
+            scanner.nextLine();
+            authUser = null; // Reset the authenticated user
             System.out.println("=============Wellcome, to Event Keeper!=============");
             System.out.println("\tYou are a:");
             System.out.println("\t\t1. Guest (First time in this app)");
@@ -87,10 +89,10 @@ public class ConsoleInterface {
                     index();
                     break;
             }
-        scanner.close();
     }
     // User can sign up to the app
     private void Register(){
+        scanner.nextLine();
         System.out.println("============= Create your account =============");
         System.out.println("\tInsert your informations");
         System.out.print("\t\tEnter your first name: ");
@@ -111,6 +113,7 @@ public class ConsoleInterface {
     }
     // Verify User's credentials
     private  void Authenticate(){
+        scanner.nextLine();
         System.out.println("============= You already have an account =============");
         System.out.println("\tLogin:");
         System.out.print("\t\tEnter your email: ");
@@ -141,6 +144,7 @@ public class ConsoleInterface {
     }
     // Admin Dashboard
     private void AdminMenu() {
+        scanner.nextLine();
         System.out.println("============= Admin Menu: =============");
         System.out.println("\t1. Manage Events."); // To manage events and their participants
         System.out.println("\t2. Search for an event."); // Search 
@@ -164,6 +168,8 @@ public class ConsoleInterface {
                 break;
             case 3:
                 System.out.println("Managing users...");
+                UsersDisplay();
+                UserManageMenu();
                 break;
             case 4:
                 System.out.println("Managing registrations...");
@@ -183,7 +189,6 @@ public class ConsoleInterface {
                 break;
         }
     }
-    
     private String GlobalReport() {
         int totalUsers = userRepo.readAll().size();
         int totalEvents = eventRepo.readAll().size();
@@ -197,8 +202,9 @@ public class ConsoleInterface {
 
         return report;
     }
-    // User dashboard
+    // User dashboard 
     private  void UserMenu(){
+        scanner.nextLine();
         System.out.println("============= User Menu: =============");
         System.out.println("\t1. Events.");// to see events and register to them
         System.out.println("\t2. Search for an event."); // Search 
@@ -231,9 +237,193 @@ public class ConsoleInterface {
                 break;
         }
     }
+    // Users management dashboard (for admin only)
+    private void UsersDisplay(){
+        // Display users list
+        List<User> users = userRepo.readAll();
+        if (users.isEmpty()) {
+            System.out.println("No users available.");
+        } else {
+            System.out.println("================== Users ==================");
+            for (User user : users){
+                // Display user details
+                System.out.println(user.toString());
+            }
+            System.out.println("===========================================");
+        }
+    }
+    private void UserManageMenu(){
+        scanner.nextLine();
+        // Management choices for admin
+        System.out.println("============= User Management Menu: =============");
+        System.out.println("\t1. Add a User.");// to add an user
+        System.out.println("\t2. Select a desired user to manage."); // to select the user wanted to manage edit, delete, see his registrations
+        System.out.println("\t3. Back to Main Menu.");
+        System.out.println("======================================");
+        System.out.print("\tEnter your choice : ");
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1:
+                System.out.println("Add a User...");
+                addUser();
+                break;
+            case 2:
+                // Show the selected user along with the user manege menu
+                System.out.println("============= Choose an user: =============");
+                System.out.println("\tEnter your choice (the user ID): ");
+                int userID = scanner.nextInt();
+                if (userRepo.read(userID).isPresent()) {
+                    ManageChosenUser(userRepo.read(userID).get());
+                } else {
+                    System.out.println("\tThis is not an available choice.");
+                    UserManageMenu();
+                }
+                break;
+            case 3:
+                System.out.println("Back to Main Menu...");
+                AdminMenu();
+                break;
+            default:
+                System.out.println("\tInvalid choice! Try one of the options above.");
+                UserManageMenu();
+                break;
+        }
+    }
+    private void ManageChosenUser(User user){
+        scanner.nextLine();
+        // display the item 
+        System.out.println(user.toString());
+        System.out.println("=============== Menu: ===============");
+        System.out.println("\t1. See Registrations.");
+        System.out.println("\t2. Edit The User.");
+        System.out.println("\t3. Delete The User");
+        System.out.println("\t4. Back to Main Menu.");
+        System.out.println("=====================================");
+        System.out.print("\tEnter your choice : ");
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1:
+                UserRegistrations(user);
+                break;
+            case 2:
+                editUser(user);
+                break;
+            case 3:
+                deleteUser(user);
+                break;
+            case 4:
+                UserManageMenu();
+                break;
+            default:
+                System.out.println("\tInvalid choice! Please try again.");
+                ManageChosenUser(user);
+                break;
+        }
+    }
+    private void addUser() {
+        scanner.nextLine();
+        System.out.println("=== Add New User ===");
+    
+        // Get user details
+        System.out.print("Enter first name: ");
+        String firstName = scanner.next();
+    
+        System.out.print("Enter last name: ");
+        String lastName = scanner.next();
+    
+        System.out.print("Enter email: ");
+        String email = scanner.next();
+    
+        System.out.print("Enter password: ");
+        String password = scanner.next();
+    
+        
+    
+        // Create and add the new user
+        User newUser = new User(firstName, lastName, Role.USER, email, password);
+        userRepo.create(newUser);
+    
+        System.out.println("User added successfully!");
+        UserManageMenu(); // Return to the User Management Menu
+    }
+    
+    private void editUser(User user) {
+        scanner.nextLine(); // Consume newline left-over
+        System.out.println("=== Edit User ===");
+    
+        System.out.println("Current user details:");
+        System.out.println(user.toString());
+    
+        // Edit first name
+        System.out.print("Enter new first name (or press Enter to keep '" + user.getFirstName() + "'): ");
+        String firstName = scanner.next();
+        if (!firstName.isEmpty()) {
+            user.setFirstName(firstName);
+        }
+    
+        // Edit last name
+        System.out.print("Enter new last name (or press Enter to keep '" + user.getLastName() + "'): ");
+        String lastName = scanner.next();
+        if (!lastName.isEmpty()) {
+            user.setLastName(lastName);
+        }
+    
+        // Edit email
+        System.out.print("Enter new email (or press Enter to keep '" + user.getEmail() + "'): ");
+        String email = scanner.next();
+        if (!email.isEmpty()) {
+            user.setEmail(email);
+        }
+    
+        // Edit password
+        System.out.print("Enter new password (or press Enter to keep the current password): ");
+        String password = scanner.next();
+        if (!password.isEmpty()) {
+            user.setPassword(password);
+        }
+    
+        // Update the user in the repository
+        userRepo.update(user);
+    
+        System.out.println("User updated successfully!");
+        ManageChosenUser(user); // Return to managing the chosen user
+    }
+    
+    private void deleteUser(User user) {
+        scanner.nextLine(); // Consume newline left-over
+        System.out.println("=== Delete User ===");
+    
+        System.out.println("You are about to delete the following user:");
+        System.out.println(user.toString());
+    
+        System.out.print("Are you sure you want to delete this user? (yes/no): ");
+        String confirmation = scanner.nextLine().trim().toLowerCase();
+    
+        switch (confirmation) {
+            case "yes":
+                if (userRepo.delete(user.getId())) {
+                    System.out.println("User deleted successfully!");
+                } else {
+                    System.out.println("Failed to delete the user. Please try again.");
+                }
+                break;
+            case "no":
+                System.out.println("User deletion canceled.");
+                break;
+            default:
+                System.out.println("Invalid choice! Please enter 'yes' or 'no'.");
+                deleteUser(user); // Retry confirmation
+                break;
+        }
+    
+        UserManageMenu(); // Return to the user management menu
+    }
+    
+    private void UserRegistrations(User user){
+
+    }
     // Events management dashboard
     private void EventsDisplay() {
-        // Assuming eventRepo is an instance of EventRepository class
         List<Event> events = eventRepo.readAll(); // Fetch all events
     
         if (events.isEmpty()) {
@@ -243,6 +433,9 @@ public class ConsoleInterface {
             for (Event event : events) {
                 // Display event details
                 System.out.println(event.toString());
+                if (authUser.getRole().equals(Role.ADMIN)) {
+                    System.out.println("Number of Participants: " + event.getParticipants().size() +",\n");
+                }
             }
             System.out.println("============================================");
         }
@@ -258,14 +451,13 @@ public class ConsoleInterface {
         System.out.print("\tEnter your choice: ");
         
         int choice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline left-over
         
         List<Event> results;
         
         switch (choice) {
             case 1:
                 System.out.print("\tEnter date (YYYY-MM-DD): ");
-                String dateString = scanner.nextLine();
+                String dateString = scanner.next();
                 try {
                     Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
                     results = eventRepo.search(date, null, null);
@@ -276,7 +468,7 @@ public class ConsoleInterface {
                 break;
             case 2:
                 System.out.print("\tEnter location: ");
-                String location = scanner.nextLine();
+                String location = scanner.next();
                 results = eventRepo.search(null, location, null);
                 break;
             case 3:
@@ -285,7 +477,7 @@ public class ConsoleInterface {
                     System.out.println("\t\t- " + type);
                 }
                 System.out.print("\tEnter type: ");
-                String typeString = scanner.nextLine().toUpperCase();
+                String typeString = scanner.next().toUpperCase();
                 try {
                     EventType type = EventType.valueOf(typeString);
                     results = eventRepo.search(null, null, type);
@@ -296,7 +488,7 @@ public class ConsoleInterface {
                 break;
             case 4:
                 System.out.print("\tEnter date (YYYY-MM-DD, or leave empty for none): ");
-                String dateInput = scanner.nextLine();
+                String dateInput = scanner.next();
                 Date date = null;
                 if (!dateInput.isEmpty()) {
                     try {
@@ -307,13 +499,13 @@ public class ConsoleInterface {
                 }
                 
                 System.out.print("\tEnter location (or leave empty for none): ");
-                String locationInput = scanner.nextLine();
+                String locationInput = scanner.next();
                 
                 System.out.println("\tEnter event type (or leave empty for none):");
                 for (EventType type : EventType.values()) {
                     System.out.println("\t\t- " + type);
                 }
-                String typeInput = scanner.nextLine().toUpperCase();
+                String typeInput = scanner.next().toUpperCase();
                 EventType typeInputEnum = null;
                 if (!typeInput.isEmpty()) {
                     try {
@@ -360,6 +552,7 @@ public class ConsoleInterface {
             switch (choice) {
                 case 1:
                     // Add Event method
+                    addEvent();
                     break;
                 case 2:
                     // Show the selected event along with the event manege menu
@@ -413,21 +606,319 @@ public class ConsoleInterface {
             }
         }
     }
+    // Method to add Event
+    private void addEvent() {
+        System.out.println("=============== Add New Event ===============");
+    
+        System.out.print("Enter event title: ");
+        String title = scanner.next();
+    
+        Date date = null;
+        boolean validDate = false;
+        while (!validDate) {
+            System.out.print("Enter event date (yyyy-MM-dd): ");
+            String dateStr = scanner.next();
+            try {
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+                validDate = true; // Date is valid, exit loop
+            } catch (ParseException e) {
+                System.out.println("Invalid date format! Please enter the date in 'yyyy-MM-dd' format.");
+            }
+        }
+    
+        System.out.print("Enter event location: ");
+        String location = scanner.next();
+    
+        EventType type = null;
+        boolean validType = false;
+        while (!validType) {
+            // Display event type choices
+            System.out.println("Select event type:");
+            System.out.println("1. CONFERENCE");
+            System.out.println("2. SEMINAR");
+            System.out.println("3. MEETING");
+            System.out.println("4. WORKSHOP");
+            System.out.print("Enter your choice (1-4): ");
+            int typeChoice = scanner.nextInt();
+            scanner.next(); // Consume newline left-over
+            
+            switch (typeChoice) {
+                case 1:
+                    type = EventType.CONFERENCE;
+                    validType = true;
+                    break;
+                case 2:
+                    type = EventType.SEMINAR;
+                    validType = true;
+                    break;
+                case 3:
+                    type = EventType.MEETING;
+                    validType = true;
+                    break;
+                case 4:
+                    type = EventType.WORKSHOP;
+                    validType = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice! Please enter a number between 1 and 4.");
+                    break;
+            }
+        }
+    
+        // Create new Event object
+        Event newEvent = new Event(title, date, location, type); // Ensure your Event class has a default constructor
+        
+        // Add event to the repository
+        eventRepo.create(newEvent);
+    
+        System.out.println("Event added successfully!");
+        EventManageMenu(authUser.getRole()); // Return to the event management menu
+    }
+    // Method to edit a chosen Event
+    private void editEvent(Event event) {
+        System.out.println("=== Edit Event ===");
+    
+        System.out.println("Current event details:");
+        System.out.println(event.toString());
+    
+        // Editing event title
+        System.out.print("Enter new event title (or press Enter to keep '" + event.getTitle() + "'): ");
+        String title = scanner.next();
+        if (!title.isEmpty()) {
+            event.setTitle(title);
+        }
+    
+        // Editing event date
+        Date date = null;
+        boolean validDate = false;
+        while (!validDate) {
+            System.out.print("Enter new event date (yyyy-MM-dd, or press Enter to keep '" + new SimpleDateFormat("yyyy-MM-dd").format(event.getDate()) + "'): ");
+            String dateStr = scanner.next();
+            if (dateStr.isEmpty()) {
+                validDate = true; // No change, so it's valid
+            } else {
+                try {
+                    date = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+                    event.setDate(date);
+                    validDate = true; // Date is valid, exit loop
+                } catch (ParseException e) {
+                    System.out.println("Invalid date format! Please enter the date in 'yyyy-MM-dd' format.");
+                }
+            }
+        }
+    
+        // Editing event location
+        System.out.print("Enter new event location (or press Enter to keep '" + event.getLocation() + "'): ");
+        String location = scanner.next();
+        if (!location.isEmpty()) {
+            event.setLocation(location);
+        }
+    
+        // Editing event type
+        EventType type = null;
+        boolean validType = false;
+        while (!validType) {
+            System.out.println("Select new event type (or press Enter to keep '" + event.getType() + "'):");
+            System.out.println("1. CONFERENCE");
+            System.out.println("2. SEMINAR");
+            System.out.println("3. MEETING");
+            System.out.println("4. WORKSHOP");
+            System.out.print("Enter your choice (1-4): ");
+            String typeStr = scanner.next();
+            if (typeStr.isEmpty()) {
+                validType = true; // No change, so it's valid
+            } else {
+                switch (typeStr) {
+                    case "1":
+                        type = EventType.CONFERENCE;
+                        validType = true;
+                        break;
+                    case "2":
+                        type = EventType.SEMINAR;
+                        validType = true;
+                        break;
+                    case "3":
+                        type = EventType.MEETING;
+                        validType = true;
+                        break;
+                    case "4":
+                        type = EventType.WORKSHOP;
+                        validType = true;
+                        break;
+                    default:
+                        System.out.println("Invalid choice! Please enter a number between 1 and 4.");
+                        break;
+                }
+            }
+        }
+        if (type != null) {
+            event.setType(type);
+        }
+    
+        // Update the event in the repository
+        eventRepo.update(event);
+    
+        System.out.println("Event updated successfully!");
+        ManageChosenEvent(event); // Return to managing the chosen event
+    }
+    // Method to delete a chosen Event
+    private void deleteEvent(Event event) {
+        scanner.next(); // Consume newline left-over
+        System.out.println("=== Delete Event ===");
+    
+        System.out.println("You are about to delete the following event:");
+        System.out.println(event.toString());
+    
+        System.out.print("Are you sure you want to delete this event? (Yes/No) Yes: ");
+        String confirmation = scanner.next().trim().toLowerCase();
+    
+        if (confirmation.isBlank()) {
+            confirmation = "yes";
+        }
+        switch (confirmation) {
+            case "yes":
+                if (eventRepo.delete(event.getId())) {
+                    System.out.println("Event deleted successfully!");
+                } else {
+                    System.out.println("Failed to delete the event. Please try again.");
+                }
+                break;
+            case "no":
+                System.out.println("Event deletion canceled.");
+                break;
+            default:
+                System.out.println("Invalid choice! Please enter 'yes' or 'no'.");
+                deleteEvent(event); // Retry confirmation
+                break;
+        }
+    
+        EventManageMenu(authUser.getRole()); // Return to the event management menu
+    }
+    // Method to get a chosen Event manage choices
     private void ManageChosenEvent(Event event){
-
+        // display the item 
+        System.out.println(event.toString());
+        System.out.println("=============== Menu: ===============");
+        System.out.println("\t1. See Participants.");
+        System.out.println("\t2. See Registrations.");
+        System.out.println("\t3. Edit The Event.");
+        System.out.println("\t4. Delete The Event");
+        System.out.println("\t5. Back to Main Menu.");
+        System.out.println("=====================================");
+        System.out.print("\tEnter your choice : ");
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1:
+                seeParticipants(event);
+                break;
+            case 2:
+                seeRegistrations(event);
+                break;
+            case 3:
+                editEvent(event);
+                break;
+            case 4:
+                deleteEvent(event);
+                break;
+            case 5:
+                AdminMenu();
+                break;
+            default:
+                System.out.println("\tInvalid choice! Please try again.");
+                ManageChosenEvent(event);
+                break;
+        }
+    }
+    // Method to see participants of the event
+    private void seeParticipants(Event event) {
+        List<User> participants = event.getParticipants();
+        if (participants.isEmpty()) {
+            System.out.println("No participants for this event.");
+        } else {
+            System.out.println("Participants:");
+            for (User participant : participants) {
+                System.out.println("\t" + participant.toString());
+            }
+        }
+    }
+    // Method to see registrations of the event
+    private void seeRegistrations(Event event) {
+        List<Registration> registrations = event.getRegistrations();
+        if (registrations.isEmpty()) {
+            System.out.println("No registrations for this event.");
+        } else {
+            System.out.println("Registrations:");
+            for (Registration registration : registrations) {
+                System.out.println("\t" + registration.toString());
+            }
+        }
     }
     // Registration management dashboard
     private void RegistrationDisplay(){
         // display Registrations
         if (authUser.getRole().equals(Role.ADMIN)) {
-            
+            List <Registration> registrations = registrationRepo.readAll();
+
+            if (registrations.isEmpty()) {
+                System.out.println("No Registrations available.");
+            } else {
+                System.out.println("================== registrations ==================");
+                for (Registration registration : registrations) {
+                    // Display registration details
+                    System.out.println(registration.toString());
+                }
+                System.out.println("============================================");
+            }
         } else {
-            
+            List <Registration> registrations = authUser.getRegistrations();
+            if (registrations.isEmpty()) {
+                System.out.println("No Registrations available.");
+            } else {
+                System.out.println("================== registrations ==================");
+                for (Registration registration : registrations) {
+                    // Display registration details
+                    System.out.println(registration.toString());
+                }
+                System.out.println("============================================");
+            }
         }
     }
-    private void EventRegister(Event event, User user){
-        Registration registration = new Registration(new Date(), event, user);
-        event.addRegistration(registration);
-        user.addRegistration(registration);
+    private void EventRegister(Event event, User user) {
+        try {
+            // Check if event or user is null
+            if (event == null) {
+                throw new IllegalArgumentException("Event cannot be null.");
+            }
+            if (user == null) {
+                throw new IllegalArgumentException("User cannot be null.");
+            }
+    
+            // Check if the user is already registered for the event
+            boolean alreadyRegistered = event.getRegistrations().stream()
+                    .anyMatch(registration -> registration.getParticipant().getId() == user.getId());
+    
+            if (alreadyRegistered) {
+                throw new IllegalStateException("User is already registered for this event.");
+            }
+    
+            // Create and add the registration
+            Registration registration = new Registration(new Date(), event, user);
+            event.addRegistration(registration);
+            user.addRegistration(registration);
+    
+            System.out.println("Registration successful!");
+            EventManageMenu(authUser.getRole());
+    
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
     }
+    private void RegistrationManageMenu(Role role){
+        
+    }
+
 }
