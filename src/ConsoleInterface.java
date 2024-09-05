@@ -1,8 +1,10 @@
 import java.util.Scanner;
+import java.util.stream.Collectors;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 // import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Date;
 
 import entities.*;
@@ -60,39 +62,38 @@ public class ConsoleInterface {
         event1.addRegistration(reg3);
     }
     public void index(){
-            scanner.nextLine();
-            authUser = null; // Reset the authenticated user
-            System.out.println("=============Wellcome, to Event Keeper!=============");
-            System.out.println("\tYou are a:");
-            System.out.println("\t\t1. Guest (First time in this app)");
-            System.out.println("\t\t2. User (You already have an account)");
-            System.out.println("\t\t3. Administrator");
-            System.out.println("\t\t4. Exit");
-            System.out.println("====================================================");
-            System.out.print("\tEnter your choice : ");
-            int choice = scanner.nextInt();
+        authUser = null; // Reset the authenticated user
+        System.out.println("=============Wellcome, to Event Keeper!=============");
+        System.out.println("\tYou are a:");
+        System.out.println("\t\t1. Guest (First time in this app)");
+        System.out.println("\t\t2. User (You already have an account)");
+        System.out.println("\t\t3. Administrator");
+        System.out.println("\t\t4. Exit");
+        System.out.println("====================================================");
+        System.out.print("\tEnter your choice : ");
+        int choice = scanner.nextInt();
 
-            switch (choice) {
-                case 1:
-                    Register();
-                    break;
-                case 2:
-                    Authenticate();
-                    break;
-                case 3:
-                    Authenticate();
-                    break;
-                case 4:
-                    break;
-                default:
-                    System.out.println("\tInvalid choice! try one of the choices above.");
-                    index();
-                    break;
-            }
+        switch (choice) {
+            case 1:
+                Register();
+                break;
+            case 2:
+                Authenticate();
+                break;
+            case 3:
+                Authenticate();
+                break;
+            case 4:
+                break;
+            default:
+                System.out.println("\tInvalid choice! try one of the choices above.");
+                index();
+                break;
+        }
+        scanner.close();
     }
     // User can sign up to the app
     private void Register(){
-        scanner.nextLine();
         System.out.println("============= Create your account =============");
         System.out.println("\tInsert your informations");
         System.out.print("\t\tEnter your first name: ");
@@ -113,7 +114,6 @@ public class ConsoleInterface {
     }
     // Verify User's credentials
     private  void Authenticate(){
-        scanner.nextLine();
         System.out.println("============= You already have an account =============");
         System.out.println("\tLogin:");
         System.out.print("\t\tEnter your email: ");
@@ -144,7 +144,6 @@ public class ConsoleInterface {
     }
     // Admin Dashboard
     private void AdminMenu() {
-        scanner.nextLine();
         System.out.println("============= Admin Menu: =============");
         System.out.println("\t1. Manage Events."); // To manage events and their participants
         System.out.println("\t2. Search for an event."); // Search 
@@ -204,7 +203,6 @@ public class ConsoleInterface {
     }
     // User dashboard 
     private  void UserMenu(){
-        scanner.nextLine();
         System.out.println("============= User Menu: =============");
         System.out.println("\t1. Events.");// to see events and register to them
         System.out.println("\t2. Search for an event."); // Search 
@@ -253,7 +251,6 @@ public class ConsoleInterface {
         }
     }
     private void UserManageMenu(){
-        scanner.nextLine();
         // Management choices for admin
         System.out.println("============= User Management Menu: =============");
         System.out.println("\t1. Add a User.");// to add an user
@@ -290,7 +287,6 @@ public class ConsoleInterface {
         }
     }
     private void ManageChosenUser(User user){
-        scanner.nextLine();
         // display the item 
         System.out.println(user.toString());
         System.out.println("=============== Menu: ===============");
@@ -321,7 +317,6 @@ public class ConsoleInterface {
         }
     }
     private void addUser() {
-        scanner.nextLine();
         System.out.println("=== Add New User ===");
     
         // Get user details
@@ -348,7 +343,6 @@ public class ConsoleInterface {
     }
     
     private void editUser(User user) {
-        scanner.nextLine(); // Consume newline left-over
         System.out.println("=== Edit User ===");
     
         System.out.println("Current user details:");
@@ -390,7 +384,6 @@ public class ConsoleInterface {
     }
     
     private void deleteUser(User user) {
-        scanner.nextLine(); // Consume newline left-over
         System.out.println("=== Delete User ===");
     
         System.out.println("You are about to delete the following user:");
@@ -419,9 +412,18 @@ public class ConsoleInterface {
         UserManageMenu(); // Return to the user management menu
     }
     
-    private void UserRegistrations(User user){
-
+    private void UserRegistrations(User user) {
+        List<Registration> registrations = user.getRegistrations();
+        if (registrations.isEmpty()) {
+            System.out.println(user.getFirstName() + " has no event registrations.");
+        } else {
+            System.out.println(user.getFirstName() + "'s Registrations:");
+            for (Registration reg : registrations) {
+                System.out.println(reg.toString());  // Assuming the Registration class has a proper toString method.
+            }
+        }
     }
+    
     // Events management dashboard
     private void EventsDisplay() {
         List<Event> events = eventRepo.readAll(); // Fetch all events
@@ -611,13 +613,13 @@ public class ConsoleInterface {
         System.out.println("=============== Add New Event ===============");
     
         System.out.print("Enter event title: ");
-        String title = scanner.next();
+        String title = scanner.nextLine();
     
         Date date = null;
         boolean validDate = false;
         while (!validDate) {
             System.out.print("Enter event date (yyyy-MM-dd): ");
-            String dateStr = scanner.next();
+            String dateStr = scanner.nextLine();
             try {
                 date = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
                 validDate = true; // Date is valid, exit loop
@@ -627,7 +629,7 @@ public class ConsoleInterface {
         }
     
         System.out.print("Enter event location: ");
-        String location = scanner.next();
+        String location = scanner.nextLine();
     
         EventType type = null;
         boolean validType = false;
@@ -640,7 +642,6 @@ public class ConsoleInterface {
             System.out.println("4. WORKSHOP");
             System.out.print("Enter your choice (1-4): ");
             int typeChoice = scanner.nextInt();
-            scanner.next(); // Consume newline left-over
             
             switch (typeChoice) {
                 case 1:
@@ -718,6 +719,7 @@ public class ConsoleInterface {
         EventType type = null;
         boolean validType = false;
         while (!validType) {
+            scanner.nextLine();
             System.out.println("Select new event type (or press Enter to keep '" + event.getType() + "'):");
             System.out.println("1. CONFERENCE");
             System.out.println("2. SEMINAR");
@@ -763,7 +765,6 @@ public class ConsoleInterface {
     }
     // Method to delete a chosen Event
     private void deleteEvent(Event event) {
-        scanner.next(); // Consume newline left-over
         System.out.println("=== Delete Event ===");
     
         System.out.println("You are about to delete the following event:");
@@ -861,6 +862,7 @@ public class ConsoleInterface {
 
             if (registrations.isEmpty()) {
                 System.out.println("No Registrations available.");
+                AdminMenu();
             } else {
                 System.out.println("================== registrations ==================");
                 for (Registration registration : registrations) {
@@ -868,18 +870,21 @@ public class ConsoleInterface {
                     System.out.println(registration.toString());
                 }
                 System.out.println("============================================");
+                RegistrationManageMenu(authUser.getRole());
             }
         } else {
             List <Registration> registrations = authUser.getRegistrations();
             if (registrations.isEmpty()) {
                 System.out.println("No Registrations available.");
+                UserMenu();
             } else {
-                System.out.println("================== registrations ==================");
+                System.out.println("================== My registrations ==================");
                 for (Registration registration : registrations) {
                     // Display registration details
                     System.out.println(registration.toString());
                 }
-                System.out.println("============================================");
+                System.out.println("======================================================");
+                RegistrationManageMenu(authUser.getRole());
             }
         }
     }
@@ -917,8 +922,169 @@ public class ConsoleInterface {
             System.out.println("An unexpected error occurred: " + e.getMessage());
         }
     }
-    private void RegistrationManageMenu(Role role){
+    private void UnsubscribeFromEvent(User user, Event event){
+        Registration registration = registrationRepo.readAll().stream()
+                                    .filter(item -> (item.getEvent().equals(event) && item.getParticipant().equals(user)))
+                                    .collect(Collectors.toList()).get(0);
+        System.out.println(registration.toString());
+        if (authUser.getRole().equals(Role.ADMIN)) { // for the admin 
+            System.out.println("=== Unsubscribe the User"+user.getFirstName()+" from this Event "+event.getTitle()+" ===");
         
+            System.out.println("You are about to delete the following Registration:");
+            System.out.println(event.toString());
+        
+            System.out.print("Are you sure you want to Delete this registration? (Yes/No) Yes: ");
+            String confirmation = scanner.next().trim().toLowerCase();
+        
+            if (confirmation.isBlank()) {
+                confirmation = "yes";
+            }
+            switch (confirmation) {
+                case "yes":
+                    if (eventRepo.delete(event.getId())) {
+                        System.out.println("Registration deleted successfully!");
+                    } else {
+                        System.out.println("Failed to delete the registration. Please try again.");
+                        RegistrationManageMenu(authUser.getRole());
+                    }
+                    break;
+                case "no":
+                    System.out.println("Registration deletion canceled.");
+                    AdminMenu();
+                    break;
+                default:
+                    System.out.println("Invalid choice! Please enter 'yes' or 'no'.");
+                    UnsubscribeFromEvent(user, event); // Retry confirmation
+                    break;
+            }
+        } else {
+            System.out.println("=== Unsubscribe from this Event "+event.getTitle()+" ===");
+        
+            System.out.println("You are about to delete the following Registration:");
+            System.out.println(event.toString());
+        
+            System.out.print("Are you sure you want to Unsubscribe ? (Yes/No) Yes: ");
+            String confirmation = scanner.next().trim().toLowerCase();
+        
+            if (confirmation.isBlank()) {
+                confirmation = "yes";
+            }
+            switch (confirmation) {
+                case "yes":
+                    if (eventRepo.delete(event.getId())) {
+                        System.out.println("Unsubscribed successfully!");
+                    } else {
+                        System.out.println("Failed to delete the registration. Please try again.");
+                        RegistrationManageMenu(authUser.getRole());
+                    }
+                    break;
+                case "no":
+                    System.out.println("Registration deletion canceled.");
+                    UserMenu();
+                    break;
+                default:
+                    System.out.println("Invalid choice! Please enter 'yes' or 'no'.");
+                    UnsubscribeFromEvent(user, event); // Retry confirmation
+                    break;
+            }
+        }
     }
+    private void RegistrationManageMenu(Role role) {
+        if (role.equals(Role.ADMIN)) {
+            System.out.println("============= Registration Management Menu: =============");
+            System.out.println("\t1. Register a User to an Event.");
+            System.out.println("\t2. Select a desired event to manage (view participants, etc.).");
+            System.out.println("\t3. Back to Main Menu.");
+            System.out.println("=========================================================");
+            System.out.print("\tEnter your choice: ");
+            int choice = scanner.nextInt();
 
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the User ID: ");
+                    int userId = scanner.nextInt();
+                    Optional<User> user = userRepo.read(userId);
+                    
+                    if (user.isPresent()) {
+                        System.out.print("Enter the Event ID: ");
+                        int eventId = scanner.nextInt();
+                        Optional<Event> event = eventRepo.read(eventId);
+                        
+                        if (event.isPresent()) {
+                            EventRegister(event.get(), user.get());
+                        } else {
+                            System.out.println("Invalid Event ID.");
+                            RegistrationManageMenu(role);
+                        }
+                    } else {
+                        System.out.println("Invalid User ID.");
+                        RegistrationManageMenu(role);
+                    }
+                    break;
+                case 2:
+                    // Manage event registrations or participants
+                    System.out.print("Enter the Event ID: ");
+                    int eventId = scanner.nextInt();
+                    Optional<Event> event = eventRepo.read(eventId);
+                    
+                    if (event.isPresent()) {
+                        ManageChosenEvent(event.get());
+                    } else {
+                        System.out.println("Invalid Event ID.");
+                        RegistrationManageMenu(role);
+                    }
+                    break;
+                case 3:
+                    AdminMenu(); // Return to admin menu
+                    break;
+                default:
+                    System.out.println("Invalid choice! Please try again.");
+                    RegistrationManageMenu(role); // Retry
+                    break;
+            }
+        } else {
+            System.out.println("============= Registration Management Menu: =============");
+            System.out.println("\t1. Register to an Event.");
+            System.out.println("\t2. Unsubscribe from a desired event.");
+            System.out.println("\t3. Back to Main Menu.");
+            System.out.println("=========================================================");
+            System.out.print("\tEnter your choice: ");
+            int choice = scanner.nextInt();
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the Event ID: ");
+                    int eventId = scanner.nextInt();
+                    Optional<Event> event = eventRepo.read(eventId);
+                    
+                    if (event.isPresent()) {
+                        EventRegister(event.get(), authUser);
+                    } else {
+                        System.out.println("Invalid Event ID.");
+                        RegistrationManageMenu(role);
+                    }
+                    break;
+                case 2:
+                    // Unsubscribe user from event
+                    System.out.print("Enter the Event ID: ");
+                    int unsubEventId = scanner.nextInt();
+                    Optional<Event> unsubEvent = eventRepo.read(unsubEventId);
+                    
+                    if (unsubEvent.isPresent()) {
+                        UnsubscribeFromEvent(authUser, unsubEvent.get());
+                    } else {
+                        System.out.println("Invalid Event ID.");
+                        RegistrationManageMenu(role);
+                    }
+                    break;
+                case 3:
+                    System.out.println("Back to main menu...");
+                    UserMenu();
+                    break;
+                default:
+                    System.out.println("Invalid choice! Please try again.");
+                    RegistrationManageMenu(role); // Retry
+                    break;
+            }
+        }
+    }
 }
